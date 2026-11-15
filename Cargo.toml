@@ -3,11 +3,17 @@ name = "trust-infra-cli"
 version = "0.1.0"
 edition = "2024"
 
+[[bin]]
+name = "trustinfra"
+path = "src/main.rs"
+
 [dependencies]
 base64 = "0.23.1"
+clap = { version = "4", features = ["derive"] }
 chrono = { version = "0.4.45", features = ["serde"] }
 ed25519-dalek = { version = "3", features = ["rand_core"] }
 hex = "0.4"
+rand = "0.10"
 serde = { version = "1", features = ["derive"] }
 serde_jcs = "0.2.0"
 serde_json = "1"
@@ -17,7 +23,6 @@ thiserror = "2"
 [dev-dependencies]
 ed25519-dalek = { version = "3", features = ["rand_core"] }
 hex = "0.4"
-rand = "0.10"
 serde_json = "1"
 sha2 = "0.11"
 tempfile = "3"

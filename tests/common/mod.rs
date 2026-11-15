@@ -10,6 +10,11 @@ use sha2::{Digest, Sha256};
 use trust_infra_cli::{sign_bundle, signature::sign_value};
 
 pub fn build_golden(dir: &Path, key: &SigningKey) {
+    build_golden_unsigned(dir);
+    sign_bundle(dir, key).unwrap();
+}
+
+pub fn build_golden_unsigned(dir: &Path) {
     let artifacts = dir.join("artifacts");
     fs::create_dir_all(&artifacts).unwrap();
     let files = [
@@ -52,7 +57,6 @@ pub fn build_golden(dir: &Path, key: &SigningKey) {
     });
 
     write_manifest(dir, &manifest);
-    sign_bundle(dir, key).unwrap();
 }
 
 pub fn copy_dir(src: &Path, dst: &Path) {

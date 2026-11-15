@@ -8,4 +8,6 @@ pub enum Error {
     Manifest(String),
     #[error("unsafe artifact path: {0}")]
     UnsafePath(String),
+    #[error("unlisted artifact files: {0:?}")]
+    UnlistedFiles(Vec<String>),
 }

@@ -5,7 +5,9 @@ pub mod manifest;
 pub mod report;
 pub mod signature;
 
-use crate::artifacts::{check_artifact, hash_file, validate_artifact_path};
+use crate::artifacts::{
+    check_artifact, find_unlisted_artifact_files, hash_file, validate_artifact_path,
+};
 use crate::error::Error;
 use crate::manifest::Manifest;
 use crate::signature::{check_signature, sign_value};
@@ -20,6 +22,27 @@ use std::path::Path;
 pub fn sign_bundle(bundle: &Path, key: &SigningKey) -> Result<(), Error> {
     let mut manifest = read_manifest_value(bundle)?;
     let manifest_path = bundle.join("manifest.json");
+
+    let listed_paths = manifest
+        .get("artifacts")
+        .and_then(Value::as_object)
+        .ok_or_else(|| Error::Manifest("missing `artifacts` object".into()))?
+        .iter()
+        .map(|(name, entry)| {
+            let entry = entry
+                .as_object()
+                .ok_or_else(|| Error::Manifest(format!("artifact `{name}` is not an object")))?;
+            entry
+                .get("path")
+                .and_then(Value::as_str)
+                .map(str::to_owned)
+                .ok_or_else(|| Error::Manifest(format!("artifact `{name}` has no `path`")))
+        })
+        .collect::<Result<Vec<_>, _>>()?;
+    let unlisted = find_unlisted_artifact_files(bundle, &listed_paths)?;
+    if !unlisted.is_empty() {
+        return Err(Error::UnlistedFiles(unlisted));
+    }
 
     let artifacts = manifest
         .get_mut("artifacts")
@@ -41,8 +64,6 @@ pub fn sign_bundle(bundle: &Path, key: &SigningKey) -> Result<(), Error> {
     }
 
     sign_value(&mut manifest, key);
-
-    // TODO check if artifact dir contains artifacts not in manifest, return error
 
     write(&manifest_path, serde_json::to_vec_pretty(&manifest)?)?;
 
@@ -76,12 +97,66 @@ pub fn verify(bundle: &Path, trusted: &VerifyingKey) -> Report {
     };
     checks.push(pass("schema", "manifest parsed"));
 
+    match find_unlisted_artifact_files(
+        bundle,
+        &manifest
+            .artifacts
+            .values()
+            .map(|entry| entry.path.clone())
+            .collect::<Vec<_>>(),
+    ) {
+        Ok(paths) if paths.is_empty() => {
+            checks.push(pass("unlisted_files", "all artifact files are listed"));
+        }
+        Ok(paths) => {
+            checks.push(fail("unlisted_files", describe_unlisted_files(&paths)));
+        }
+        Err(error) => {
+            checks.push(fail(
+                "unlisted_files",
+                format!("cannot inspect artifacts: {error}"),
+            ));
+        }
+    }
+
+    let infra_diff = infra::diff(&manifest.infra_declared, &manifest.infra_actual);
+    if infra_diff.is_empty() {
+        checks.push(pass(
+            "infra_diff",
+            "declared and actual infrastructure match",
+        ));
+    } else {
+        checks.push(fail(
+            "infra_diff",
+            format!(
+                "{} difference(s): first path {}",
+                infra_diff.len(),
+                infra_diff[0].path
+            ),
+        ));
+    }
+
     let untrusted = !sig_ok;
     for (name, entry) in &manifest.artifacts {
         checks.push(check_artifact(bundle, name, entry, untrusted));
     }
 
-    finish(checks, trusted_key, Vec::new())
+    finish(checks, trusted_key, infra_diff)
+}
+
+fn describe_unlisted_files(paths: &[String]) -> String {
+    const DISPLAY_LIMIT: usize = 5;
+
+    let shown = paths
+        .iter()
+        .take(DISPLAY_LIMIT)
+        .cloned()
+        .collect::<Vec<_>>();
+    let mut detail = format!("unlisted files: {}", shown.join(", "));
+    if paths.len() > DISPLAY_LIMIT {
+        detail.push_str(&format!(" and {} more", paths.len() - DISPLAY_LIMIT));
+    }
+    detail
 }
 
 fn read_manifest_value(bundle: &Path) -> Result<Value, Error> {

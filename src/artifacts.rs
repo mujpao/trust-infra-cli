@@ -2,9 +2,87 @@ use crate::manifest::Artifact;
 use crate::report::{fail, pass};
 use crate::{Check, Error};
 use sha2::{Digest, Sha256};
+use std::collections::HashSet;
 use std::io::Read;
 use std::path::{Component, Path, PathBuf};
-use std::{fs::File, io};
+use std::{fs, fs::File, io};
+
+pub(crate) fn find_unlisted_artifact_files(
+    bundle: &Path,
+    listed_paths: &[String],
+) -> Result<Vec<String>, Error> {
+    let listed = listed_paths
+        .iter()
+        .filter_map(|path| normalize_safe_manifest_path(path))
+        .collect::<HashSet<_>>();
+    let artifacts_dir = bundle.join("artifacts");
+    let metadata = match fs::symlink_metadata(&artifacts_dir) {
+        Ok(metadata) => metadata,
+        Err(error) if error.kind() == io::ErrorKind::NotFound => return Ok(Vec::new()),
+        Err(error) => return Err(error.into()),
+    };
+
+    let mut found = Vec::new();
+    if metadata.file_type().is_symlink() {
+        found.push("artifacts".to_owned());
+    } else if metadata.is_dir() {
+        collect_artifact_files(&artifacts_dir, Path::new("artifacts"), &mut found)?;
+    } else {
+        found.push("artifacts".to_owned());
+    }
+
+    found.retain(|path| !listed.contains(path));
+    found.sort();
+    Ok(found)
+}
+
+fn collect_artifact_files(
+    directory: &Path,
+    relative_directory: &Path,
+    found: &mut Vec<String>,
+) -> Result<(), Error> {
+    for entry in fs::read_dir(directory)? {
+        let entry = entry?;
+        let file_type = entry.file_type()?;
+        let path = entry.path();
+        let relative_path = relative_directory.join(entry.file_name());
+
+        if file_type.is_dir() {
+            collect_artifact_files(&path, &relative_path, found)?;
+        } else {
+            found.push(normalize_path_separators(&relative_path));
+        }
+    }
+    Ok(())
+}
+
+fn normalize_safe_manifest_path(path: &str) -> Option<String> {
+    if path.is_empty() {
+        return None;
+    }
+
+    let path = Path::new(path);
+    if path.is_absolute() {
+        return None;
+    }
+
+    let components = path.components().collect::<Vec<_>>();
+    if components.is_empty()
+        || components
+            .iter()
+            .any(|component| !matches!(component, Component::Normal(_)))
+    {
+        return None;
+    }
+    Some(normalize_path_separators(path))
+}
+
+fn normalize_path_separators(path: &Path) -> String {
+    path.components()
+        .map(|component| component.as_os_str().to_string_lossy())
+        .collect::<Vec<_>>()
+        .join("/")
+}
 
 pub fn check_artifact(bundle: &Path, name: &str, entry: &Artifact, untrusted: bool) -> Check {
     let id = format!("artifact:{name}");

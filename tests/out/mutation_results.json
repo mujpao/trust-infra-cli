@@ -44,8 +44,10 @@
     "expected_failed_checks": [
       "unlisted_files"
     ],
-    "actual_failed_checks": [],
-    "pass": false
+    "actual_failed_checks": [
+      "unlisted_files"
+    ],
+    "pass": true
   },
   {
     "case": "edit_model",
@@ -114,7 +116,9 @@
     "expected_failed_checks": [
       "infra_diff"
     ],
-    "actual_failed_checks": [],
-    "pass": false
+    "actual_failed_checks": [
+      "infra_diff"
+    ],
+    "pass": true
   }
 ]

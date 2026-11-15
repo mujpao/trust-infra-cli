@@ -125,7 +125,7 @@ pub fn check_artifact(bundle: &Path, name: &str, entry: &Artifact, untrusted: bo
 
 pub fn validate_artifact_path(root: &Path, rel: &str) -> Result<PathBuf, Error> {
     if rel.is_empty() {
-        return Err(Error::UnsafePath(format!("path is empty")));
+        return Err(Error::UnsafePath("path is empty".to_string()));
     }
 
     let path = PathBuf::from(rel);

@@ -1,73 +1,119 @@
 [
   {
     "case": "edit_results",
-    "expected_check": "artifact:results",
-    "actual_failed_checks": [],
-    "pass": false
+    "expected_failed_checks": [
+      "artifact:results"
+    ],
+    "actual_failed_checks": [
+      "artifact:results"
+    ],
+    "pass": true
   },
   {
     "case": "edit_scorer",
-    "expected_check": "artifact:scorer",
-    "actual_failed_checks": [],
-    "pass": false
+    "expected_failed_checks": [
+      "artifact:scorer"
+    ],
+    "actual_failed_checks": [
+      "artifact:scorer"
+    ],
+    "pass": true
   },
   {
     "case": "edit_dataset",
-    "expected_check": "artifact:dataset",
-    "actual_failed_checks": [],
-    "pass": false
+    "expected_failed_checks": [
+      "artifact:dataset"
+    ],
+    "actual_failed_checks": [
+      "artifact:dataset"
+    ],
+    "pass": true
   },
   {
     "case": "delete_artifact",
-    "expected_check": "artifact:results",
-    "actual_failed_checks": [],
-    "pass": false
+    "expected_failed_checks": [
+      "artifact:results"
+    ],
+    "actual_failed_checks": [
+      "artifact:results"
+    ],
+    "pass": true
   },
   {
     "case": "add_unlisted_file",
-    "expected_check": "unlisted_files",
+    "expected_failed_checks": [
+      "unlisted_files"
+    ],
     "actual_failed_checks": [],
     "pass": false
   },
   {
     "case": "edit_model",
-    "expected_check": "signature",
-    "actual_failed_checks": [],
-    "pass": false
+    "expected_failed_checks": [
+      "signature"
+    ],
+    "actual_failed_checks": [
+      "signature"
+    ],
+    "pass": true
   },
   {
     "case": "edit_and_rehash_results",
-    "expected_check": "signature",
-    "actual_failed_checks": [],
-    "pass": false
+    "expected_failed_checks": [
+      "signature"
+    ],
+    "actual_failed_checks": [
+      "signature"
+    ],
+    "pass": true
   },
   {
     "case": "attacker_resign",
-    "expected_check": "signature",
-    "actual_failed_checks": [],
-    "pass": false
+    "expected_failed_checks": [
+      "signature"
+    ],
+    "actual_failed_checks": [
+      "signature"
+    ],
+    "pass": true
   },
   {
     "case": "remove_signature",
-    "expected_check": "signature",
-    "actual_failed_checks": [],
-    "pass": false
+    "expected_failed_checks": [
+      "signature"
+    ],
+    "actual_failed_checks": [
+      "signature"
+    ],
+    "pass": true
   },
   {
     "case": "add_unknown_field",
-    "expected_check": "signature",
-    "actual_failed_checks": [],
-    "pass": false
+    "expected_failed_checks": [
+      "schema",
+      "signature"
+    ],
+    "actual_failed_checks": [
+      "schema",
+      "signature"
+    ],
+    "pass": true
   },
   {
     "case": "unsafe_artifact_path",
-    "expected_check": "path_safety",
-    "actual_failed_checks": [],
-    "pass": false
+    "expected_failed_checks": [
+      "path_safety"
+    ],
+    "actual_failed_checks": [
+      "path_safety"
+    ],
+    "pass": true
   },
   {
     "case": "infra_mismatch",
-    "expected_check": "infra_diff",
+    "expected_failed_checks": [
+      "infra_diff"
+    ],
     "actual_failed_checks": [],
     "pass": false
   }

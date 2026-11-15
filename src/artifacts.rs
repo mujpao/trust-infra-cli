@@ -1,8 +1,49 @@
-use crate::Error;
+use crate::manifest::Artifact;
+use crate::report::{fail, pass};
+use crate::{Check, Error};
 use sha2::{Digest, Sha256};
 use std::io::Read;
 use std::path::{Component, Path, PathBuf};
 use std::{fs::File, io};
+
+pub fn check_artifact(bundle: &Path, name: &str, entry: &Artifact, untrusted: bool) -> Check {
+    let id = format!("artifact:{name}");
+    let note = if untrusted {
+        " (manifest hash untrusted)"
+    } else {
+        ""
+    };
+
+    let full = match validate_artifact_path(bundle, &entry.path) {
+        Ok(p) => p,
+        Err(Error::Io(e)) if e.kind() == std::io::ErrorKind::NotFound => {
+            return fail(id, format!("file missing: {}{note}", entry.path));
+        }
+        Err(Error::UnsafePath { .. }) => {
+            return fail(
+                "path_safety",
+                format!("unsafe path for artifact '{name}': {}", entry.path),
+            );
+        }
+        Err(e) => {
+            return fail(id, format!("cannot access {}: {e}{note}", entry.path));
+        }
+    };
+
+    match hash_file(&full) {
+        Ok(actual) if actual == entry.sha256 => pass(id, format!("sha256 matches{note}")),
+        Ok(actual) => {
+            let mut c = fail(id, format!("sha256 mismatch{note}"));
+            c.expected = Some(entry.sha256.clone());
+            c.actual = Some(actual);
+            c
+        }
+        Err(e) if e.kind() == std::io::ErrorKind::NotFound => {
+            fail(id, format!("file missing: {}{note}", entry.path))
+        }
+        Err(e) => fail(id, format!("cannot read {}: {e}{note}", entry.path)),
+    }
+}
 
 pub fn validate_artifact_path(root: &Path, rel: &str) -> Result<PathBuf, Error> {
     if rel.is_empty() {
@@ -17,7 +58,6 @@ pub fn validate_artifact_path(root: &Path, rel: &str) -> Result<PathBuf, Error> 
 
     for component in path.components() {
         if !matches!(component, Component::Normal(..)) {
-            println!("here found absolute path");
             return Err(Error::UnsafePath(format!("path {rel} is absolute")));
         }
     }

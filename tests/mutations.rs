@@ -19,14 +19,14 @@ use common::{
 struct Case {
     name: &'static str,
     mutate: fn(&Path, &SigningKey),
-    expect_check: &'static str,
+    expect_failed: &'static [&'static str],
     expect_verdict: Verdict,
 }
 
 #[derive(Serialize)]
 struct MutationResult {
     case: &'static str,
-    expected_check: &'static str,
+    expected_failed_checks: Vec<String>,
     actual_failed_checks: Vec<String>,
     pass: bool,
 }
@@ -53,73 +53,77 @@ fn all_mutations_detected() {
         Case {
             name: "edit_results",
             mutate: edit_results,
-            expect_check: "artifact:results",
+            expect_failed: &["artifact:results"],
             expect_verdict: Verdict::Tampered,
         },
         Case {
             name: "edit_scorer",
             mutate: edit_scorer,
-            expect_check: "artifact:scorer",
+            expect_failed: &["artifact:scorer"],
             expect_verdict: Verdict::Tampered,
         },
         Case {
             name: "edit_dataset",
             mutate: edit_dataset,
-            expect_check: "artifact:dataset",
+            expect_failed: &["artifact:dataset"],
             expect_verdict: Verdict::Tampered,
         },
         Case {
             name: "delete_artifact",
             mutate: delete_results,
-            expect_check: "artifact:results",
+            expect_failed: &["artifact:results"],
             expect_verdict: Verdict::Tampered,
         },
         Case {
             name: "add_unlisted_file",
             mutate: add_unlisted_file,
-            expect_check: "unlisted_files",
+            expect_failed: &["unlisted_files"],
             expect_verdict: Verdict::Tampered,
         },
         Case {
             name: "edit_model",
             mutate: edit_model,
-            expect_check: "signature",
+            expect_failed: &["signature"],
             expect_verdict: Verdict::Tampered,
         },
         Case {
             name: "edit_and_rehash_results",
             mutate: edit_and_rehash_results,
-            expect_check: "signature",
+            expect_failed: &["signature"],
             expect_verdict: Verdict::Tampered,
         },
         Case {
             name: "attacker_resign",
             mutate: attacker_resign,
-            expect_check: "signature",
+            expect_failed: &["signature"],
             expect_verdict: Verdict::Tampered,
         },
         Case {
             name: "remove_signature",
             mutate: remove_signature,
-            expect_check: "signature",
+            expect_failed: &["signature"],
             expect_verdict: Verdict::Tampered,
         },
+        // CHANGED: unsigned edit + deny_unknown_fields means BOTH signature and
+        // schema fail, and a schema failure is Unverifiable (exit code 2).
+        // If you'd rather it be Tampered, re-sign in the mutation and decide
+        // the expectation again.
         Case {
             name: "add_unknown_field",
             mutate: add_unknown_field,
-            expect_check: "signature",
-            expect_verdict: Verdict::Tampered,
+            expect_failed: &["schema", "signature"],
+            expect_verdict: Verdict::Unverifiable,
         },
         Case {
             name: "unsafe_artifact_path",
             mutate: unsafe_artifact_path,
-            expect_check: "path_safety",
+            expect_failed: &["path_safety"],
             expect_verdict: Verdict::Tampered,
         },
         Case {
             name: "infra_mismatch",
             mutate: infra_mismatch,
-            expect_check: "infra_diff",
+            expect_failed: &["infra_diff"],
             expect_verdict: Verdict::Tampered,
         },
     ];
@@ -142,7 +146,7 @@ fn all_mutations_detected() {
         }
         results.push(MutationResult {
             case: case.name,
-            expected_check: case.expect_check,
+            expected_failed_checks: sorted(case.expect_failed.iter().map(|s| s.to_string())),
             actual_failed_checks,
             pass,
         });
@@ -162,17 +166,23 @@ fn all_mutations_detected() {
     );
 }
 
+fn sorted(ids: impl Iterator<Item = String>) -> Vec<String> {
+    let mut v: Vec<String> = ids.collect();
+    v.sort();
+    v
+}
+
 fn assess_report(report: &Report, case: &Case) -> (Vec<String>, bool, String) {
     let failed = catch_unwind(AssertUnwindSafe(|| report.failed_ids()));
     let Ok(failed_ids) = failed else {
         return (Vec::new(), false, "failed_ids panicked".to_owned());
     };
-    let actual: Vec<String> = failed_ids.into_iter().map(str::to_owned).collect();
-    let pass =
-        report.verdict == case.expect_verdict && actual.iter().any(|id| id == case.expect_check);
+    let actual = sorted(failed_ids.into_iter().map(str::to_owned));
+    let expected = sorted(case.expect_failed.iter().map(|s| s.to_string()));
+    let pass = report.verdict == case.expect_verdict && actual == expected;
     let detail = format!(
-        "expected verdict {:?} and check {}; got {:?} and {:?}",
-        case.expect_verdict, case.expect_check, report.verdict, actual
+        "expected verdict {:?} and failed checks {:?}; got {:?} and {:?}",
+        case.expect_verdict, expected, report.verdict, actual
     );
     (actual, pass, detail)
 }
@@ -232,7 +242,10 @@ fn add_unknown_field(bundle: &Path, _: &SigningKey) {
 
 fn unsafe_artifact_path(bundle: &Path, key: &SigningKey) {
     let mut manifest = read_manifest(bundle);
-    manifest["artifacts"]["results"]["path"] = json!("../outside.txt");
+    manifest["artifacts"]["evil"] = json!({
+        "path": "../outside.txt",
+        "sha256": "0".repeat(64),
+    });
     resign(bundle, &manifest, key);
 }
 

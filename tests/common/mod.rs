@@ -38,7 +38,7 @@ pub fn build_golden(dir: &Path, key: &SigningKey) {
         "image": "sha256:aaa",
         "packages": {"python": "3.12", "numpy": "2.0"}
     });
-    let mut manifest = json!({
+    let manifest = json!({
         "schema_version": "0.1",
         "run_id": "golden-run",
         "timestamp": "2026-01-01T00:00:00Z",
@@ -50,13 +50,9 @@ pub fn build_golden(dir: &Path, key: &SigningKey) {
         "infra_declared": infra,
         "infra_actual": infra,
     });
-    write_manifest(dir, &manifest);
 
-    // NOTE: Keep using the public API when it is implemented; test-side signing
-    // currently keeps mutation fixtures usable while that API is a todo! stub.
-    let _ = std::panic::catch_unwind(std::panic::AssertUnwindSafe(|| sign_bundle(dir, key)));
-    fixture_sign_value(&mut manifest, key);
     write_manifest(dir, &manifest);
+    sign_bundle(dir, key).unwrap();
 }
 
 pub fn copy_dir(src: &Path, dst: &Path) {
@@ -86,22 +82,13 @@ pub fn write_manifest(dir: &Path, manifest: &Value) {
 
 pub fn resign(dir: &Path, manifest: &Value, key: &SigningKey) {
     let mut manifest = manifest.clone();
-    let _ = std::panic::catch_unwind(std::panic::AssertUnwindSafe(|| {
-        sign_value(&mut manifest, key)
-    }));
-    fixture_sign_value(&mut manifest, key);
+    manifest.as_object_mut().unwrap().remove("signature");
+    sign_value(&mut manifest, key);
     write_manifest(dir, &manifest);
 }
 
 pub fn hash_file(path: &Path) -> String {
     sha256(&fs::read(path).unwrap())
-}
-
-fn fixture_sign_value(manifest: &mut Value, key: &SigningKey) {
-    manifest.as_object_mut().unwrap().remove("signature");
-    let canonical = serde_json::to_vec(manifest).unwrap();
-    let signature = key.sign(&canonical);
-    manifest["signature"] = Value::String(hex::encode(signature.to_bytes()));
 }
 
 fn sha256(contents: &[u8]) -> String {

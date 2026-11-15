@@ -4,12 +4,11 @@ use std::{
 };
 
 use ed25519_dalek::SigningKey;
-use rand::rngs::OsRng;
 use tempfile::tempdir;
 use trust_infra_cli::{Verdict, verify};
 
 fn assert_unverifiable_without_panicking(bundle: &std::path::Path) {
-    let key = SigningKey::generate(&mut OsRng).verifying_key();
+    let key = SigningKey::generate(&mut rand::rng()).verifying_key();
     let result = catch_unwind(AssertUnwindSafe(|| verify(bundle, &key)));
     assert!(result.is_ok(), "verify panicked for {}", bundle.display());
     assert_eq!(result.unwrap().verdict, Verdict::Unverifiable);

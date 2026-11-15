@@ -7,7 +7,6 @@ use std::{
 };
 
 use ed25519_dalek::SigningKey;
-use rand::rngs::OsRng;
 use serde::Serialize;
 use serde_json::{Value, json};
 use tempfile::tempdir;
@@ -35,7 +34,7 @@ struct MutationResult {
 #[test]
 fn golden_bundle_verifies() {
     let root = tempdir().unwrap();
-    let key = SigningKey::generate(&mut OsRng);
+    let key = SigningKey::generate(&mut rand::rng());
     build_golden(root.path(), &key);
 
     let report = verify(root.path(), &key.verifying_key());
@@ -47,7 +46,7 @@ fn golden_bundle_verifies() {
 fn all_mutations_detected() {
     let root = tempdir().unwrap();
     let golden = root.path().join("golden");
-    let trusted = SigningKey::generate(&mut OsRng);
+    let trusted = SigningKey::generate(&mut rand::rng());
     build_golden(&golden, &trusted);
 
     let cases = [
@@ -215,7 +214,7 @@ fn edit_and_rehash_results(bundle: &Path, _: &SigningKey) {
 fn attacker_resign(bundle: &Path, _: &SigningKey) {
     let mut manifest = read_manifest(bundle);
     manifest["model"] = json!("attacker-model");
-    let attacker = SigningKey::generate(&mut OsRng);
+    let attacker = SigningKey::generate(&mut rand::rng());
     resign(bundle, &manifest, &attacker);
 }
 

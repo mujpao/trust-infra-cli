@@ -1,4 +1,4 @@
-# TrustInfra experiment setup: the "recipe" from paper §3.1 step 1.
+# TrustInfra experiment setup: the "recipe" from paper §3.2.
 # Two containers on one private network:
 #   ollama : serves the model (image pinned by digest)
 #   eval   : runs Inspect against ollama (image pinned by digest)

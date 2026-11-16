@@ -1,6 +1,7 @@
 /target
 .vscode
 *.key
+experiments/keys/local.*
 .venv
 infra/.terraform/
 infra/terraform.tfstate*

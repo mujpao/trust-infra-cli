@@ -14,6 +14,7 @@ HERE=$(cd "$(dirname "$0")" && pwd)
 ROOT=$(cd "$HERE/.." && pwd)
 INFRA="$ROOT/infra"
 TRUSTINFRA="$ROOT/target/release/trustinfra"
+KEY_PREFIX=${KEY_PREFIX:-"$HERE/keys/local"}
 RUN_DIR="$HERE/runs/$RUN_ID"
 mkdir -p "$RUN_DIR"
 
@@ -50,9 +51,9 @@ docker exec \
 # Record what actually ran, pack, seal, check.
 python3 "$HERE/scripts/capture_actual.py" "$RUN_DIR"
 python3 "$HERE/scripts/bundle.py" "$RUN_DIR" "$RUN_ID"
-"$TRUSTINFRA" sign "$RUN_DIR/bundle" --key "$HERE/keys/demo.key"
+"$TRUSTINFRA" sign "$RUN_DIR/bundle" --key "$KEY_PREFIX.key"
 set +e
-"$TRUSTINFRA" verify "$RUN_DIR/bundle" --trusted-key "$HERE/keys/demo.pub" --json >"$RUN_DIR/verify.json"
+"$TRUSTINFRA" verify "$RUN_DIR/bundle" --trusted-key "$KEY_PREFIX.pub" --json >"$RUN_DIR/verify.json"
 echo "verify exit code: $?"
 set -e
 python3 -c "import json,sys; r=json.load(open(sys.argv[1])); print('VERDICT:', r['verdict'].upper()); [print('  infra diff:', d['path'], d['declared'], '->', d['actual']) for d in r['infra_diff']]" "$RUN_DIR/verify.json"

@@ -6,6 +6,7 @@ set -euo pipefail
 
 HERE=$(cd "$(dirname "$0")" && pwd)
 ROOT=$(cd "$HERE/.." && pwd)
+KEY_PREFIX=${KEY_PREFIX:-"$HERE/keys/local"}
 
 need() { command -v "$1" >/dev/null || { echo "missing: $1 ($2)"; exit 1; }; }
 need docker "https://docs.docker.com/get-docker/"
@@ -16,8 +17,8 @@ docker info >/dev/null 2>&1 || { echo "Docker is installed but not running"; exi
 python3 -c 'import sys; sys.exit(sys.version_info < (3, 11))' || { echo "needs Python >= 3.11"; exit 1; }
 
 cargo build --release --quiet --manifest-path "$ROOT/Cargo.toml"
-# Your own key: your bundles verify with your demo.pub, not ours.
-[[ -f "$HERE/keys/demo.key" ]] || "$ROOT/target/release/trustinfra" keygen "$HERE/keys/demo"
+# Your own key: your bundles verify with your local.pub, not ours.
+[[ -f "$KEY_PREFIX.key" ]] || "$ROOT/target/release/trustinfra" keygen "$KEY_PREFIX"
 tofu -chdir="$ROOT/infra" init -input=false >/dev/null
 
 # Clean runs: same recipe three times. Each must verify (false-alarm check).

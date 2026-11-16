@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""RQ2: break copies of real bundles on purpose and record which checker notices (paper Table 4).
+"""RQ2: break copies of real bundles on purpose and record which checker notices (paper Table 5).
 
 Methods:  B-raw (report alone), B-fp static, B-fp regen (see baselines.py), TrustInfra (`verify`).
 Detected = the method reports at least one issue (TrustInfra: verdict is not VERIFIED).
@@ -14,6 +14,7 @@ Usage:
 import argparse
 import csv
 import json
+import os
 import pathlib
 import shutil
 import subprocess
@@ -26,8 +27,9 @@ from baselines import b_fp, b_raw, sha256sums  # noqa: E402
 EXP = pathlib.Path(__file__).resolve().parents[1]
 ROOT = EXP.parent
 TRUSTINFRA = ROOT / "target" / "release" / "trustinfra"
-TRUSTED_PUB = EXP / "keys" / "demo.pub"
-TRUSTED_KEY = EXP / "keys" / "demo.key"
+KEY_PREFIX = pathlib.Path(os.environ.get("KEY_PREFIX", str(EXP / "keys" / "local")))
+TRUSTED_PUB = pathlib.Path(f"{KEY_PREFIX}.pub")
+TRUSTED_KEY = pathlib.Path(f"{KEY_PREFIX}.key")
 METHODS = ["B-raw", "B-fp static", "B-fp regen", "TrustInfra"]
 
 

@@ -174,12 +174,22 @@ experiments/
 experiments/verify_results.sh
 ```
 
-**B. Re-run everything** (Docker with ≥ 8 GB memory, [OpenTofu](https://opentofu.org), Rust ≥ 1.85, Python ≥ 3.11; ~1–1.5 h on CPU). Generates your own key, so your bundles verify with your `demo.pub`, not ours:
+**B. Re-run everything** (Docker with ≥ 8 GB memory, [OpenTofu](https://opentofu.org), Rust ≥ 1.85, Python ≥ 3.11; ~1–1.5 h on CPU). Generates your own key, so your bundles verify with your `local.pub`, not ours:
 
 ```sh
 experiments/reproduce.sh
-experiments/run_eval.sh smoke --limit 5    # or a 2-minute smoke test first
 ```
+
+For a 2-minute smoke test instead of the full reproduction, set up the release binary, local key, and OpenTofu state first:
+
+```sh
+cargo build --release
+target/release/trustinfra keygen experiments/keys/local
+tofu -chdir=infra init -input=false
+experiments/run_eval.sh smoke --limit 5
+```
+
+Set `KEY_PREFIX` to use a different key path; it defaults to `experiments/keys/local`.
 
 The host scripts use only the Python standard library. Poetry is needed only to change versions: edit `pyproject.toml`, run `poetry lock`, then `poetry export --without dev -o experiments/eval/requirements.txt` (needs `poetry-plugin-export`).
 

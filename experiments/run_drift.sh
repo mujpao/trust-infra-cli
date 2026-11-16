@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Drift runs (paper §3.4): the recipe file stays untouched, but what actually runs differs.
+# Drift runs (paper §3.5): the recipe file stays untouched, but what actually runs differs.
 #   D1  a different container image than the pinned one (as when a tag like "latest" moves):
 #       Ollama 0.40.15 instead of the declared 0.40.16
 #   D2  same model name, different compression: qwen2.5:0.5b now points to the 8-bit build

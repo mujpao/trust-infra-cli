@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Record what ACTUALLY ran (paper §3.1 step 3, "infra_actual").
+"""Record what ACTUALLY ran (paper §3.2, "infra_actual").
 
 Every value comes from observing the running system, never from the recipe:
   image refs      <- `docker inspect` of the running containers

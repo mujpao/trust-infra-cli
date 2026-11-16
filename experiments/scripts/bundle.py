@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Pack one run into a TrustInfra bundle (paper §3.1 step 3, the "packing list").
+"""Pack one run into a TrustInfra bundle (paper §3.2, the "packing list").
 
 <run_dir>/bundle/
   manifest.json      run metadata + infra_declared + infra_actual (signed later by `trustinfra sign`)

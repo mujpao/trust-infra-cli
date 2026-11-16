@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Runs INSIDE the eval container (paper §3.1 step 2).
+# Runs INSIDE the eval container (paper §3.2).
 # Inputs come as env vars from experiments/run_eval.sh, which reads them from
 # `tofu output -json declared`. Outputs go to /work (the run directory).
 set -euo pipefail

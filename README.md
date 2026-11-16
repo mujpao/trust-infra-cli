@@ -76,10 +76,10 @@ If the CLI prints `VERDICT: VERIFIED`, every file and manifest field is unchange
 | `infra_actual` | object | yes | Applied state captured after the run. Compared against `infra_declared`. |
 | `signature` | string | n/a | Base64 (standard, padded) ed25519 signature over the JCS-canonical manifest with this field removed. |
  
-### Rules
+### Schema Rules
  
 - Files get a SHA-256 in `artifacts`. Plain values (model name, commit, etc.) live directly in the signed manifest.
-- Unknown top-level fields are rejected (`deny_unknown_fields`) and also break the signature.
+- Unknown top-level fields are rejected during manifest parsing (`deny_unknown_fields`), and the verification fails as `UNVERIFIABLE`.
 - No floats in the manifest. Scores stay in the hashed results file, which avoids JCS number-formatting ambiguity.
 - Artifact paths must be relative, with no `..`, and must not be symlinks.
 - Every file under `artifacts/` must be listed. Unlisted files fail the `unlisted_files` check.

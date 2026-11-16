@@ -1,0 +1,97 @@
+"""
+TruthfulQA: Measuring How Models Mimic Human Falsehoods
+
+Stephanie Lin, Jacob Hilton, Owain Evans
+https://arxiv.org/abs/2109.07958v2
+
+# Eval truthful QA with reference questions (mc1 - single true answer)
+inspect eval truthfulqa.py
+
+# Eval against the control questions (mc2 - multi-true answer)
+inspect eval truthfulqa.py -T target=mc2
+
+# Use a different fixed answer-choice shuffle.
+inspect eval truthfulqa.py -T shuffle_choices=7
+"""
+
+from typing import Any, Literal
+
+from inspect_ai import Task, task
+from inspect_ai.dataset import Sample
+from inspect_ai.scorer import choice
+from inspect_ai.solver import multiple_choice
+
+from inspect_evals.metadata import load_eval_metadata
+from inspect_evals.utils import create_stable_id, shuffle_and_seed
+from inspect_evals.utils.huggingface import hf_dataset
+
+DEFAULT_SHUFFLE_SEED = 42
+TRUTHFULQA_DATASET_REVISION = "741b8276f2d1982aa3d5b832d3ee81ed3b896490"
+EVAL_VERSION = load_eval_metadata("truthfulqa").version
+
+
+@task
+def truthfulqa(
+    target: Literal["mc1", "mc2"] = "mc1",
+    shuffle: bool | int = DEFAULT_SHUFFLE_SEED,
+    shuffle_choices: bool | int = DEFAULT_SHUFFLE_SEED,
+) -> Task:
+    """
+    Inspect Task implementation for the TruthfulQA benchmark
+
+    Args:
+        target (Literal["mc1", "mc2"]): Whether to use the mc1 or mc2 targets
+        shuffle (bool | int): Whether and how to shuffle the samples. An integer is
+            used as the seed, True shuffles without a seed, and False keeps the
+            source order.
+        shuffle_choices (bool | int): Whether and how to shuffle answer choices. An
+            integer is used as the seed, True shuffles without a seed, and False keeps
+            the source order.
+    """
+
+    def record_to_sample(record: dict[str, Any]) -> Sample:
+        return Sample(
+            id=create_stable_id(record["question"], prefix="truthfulqa"),
+            input=record["question"],
+            choices=record[f"{target}_targets"]["choices"],
+            target=labels_to_positions(record[f"{target}_targets"]["labels"]),
+        )
+
+    should_shuffle, seed = shuffle_and_seed(shuffle)
+    dataset = hf_dataset(
+        path="truthfulqa/truthful_qa",
+        name="multiple_choice",
+        sample_fields=record_to_sample,
+        split="validation",
+        shuffle=should_shuffle,
+        seed=seed,
+        shuffle_choices=shuffle_choices,
+        revision=TRUTHFULQA_DATASET_REVISION,
+    )
+
+    # As per the reference (), mc1 only has a single true answer whereas there
+    # can be multiple true answers in mc2. See:
+    # https://github.com/sylinrl/TruthfulQA/blob/fdd8ad1c0d00a478cf8b0bb41a3ad8378c16293b/README.md#multiple-choice
+    if target == "mc1":
+        multiple_correct = False
+    else:
+        multiple_correct = True
+
+    return Task(
+        dataset=dataset,
+        solver=[multiple_choice(multiple_correct=multiple_correct)],
+        scorer=choice(),
+        version=EVAL_VERSION.comparability_version,
+        metadata=EVAL_VERSION.to_metadata(),
+    )
+
+
+# The dataset uses a binary list for each target, where 1 indicates an answer is
+# correct and 0 is incorrect. For example, if there are three options and the
+# second is correct, the target would be [0, 1, 0].
+#
+# This function converts that to a list of letters corresponding to the correct
+# answers, which allows us to use the `choice("letter")` scorer.
+#     e.g. [0, 1, 1] -> ["B", "C"]
+def labels_to_positions(labels: list[int]) -> list[str]:
+    return [chr(ord("A") + i) for i, label in enumerate(labels) if label == 1]

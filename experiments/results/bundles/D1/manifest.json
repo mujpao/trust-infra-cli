@@ -1,0 +1,114 @@
+{
+  "artifacts": {
+    "capture": {
+      "path": "artifacts/evidence/capture.json",
+      "sha256": "f7c3e6eb06868f7ae96a54aa19ec4173cf282f68868cfba5b81addaa58b0a61b"
+    },
+    "dataset": {
+      "path": "artifacts/dataset/truthfulqa_mc_validation.parquet",
+      "sha256": "23f08e230ca4ed66babf3a72419af7cbde1f3d734dd396ac4cf6d088bd162afd"
+    },
+    "inspect_log": {
+      "path": "artifacts/inspect_log.json",
+      "sha256": "342e252d48143a2fc708c84685b2e238b00ff377bc0eb1d23cbba11139a5ac73"
+    },
+    "ollama_show": {
+      "path": "artifacts/evidence/ollama_show.json",
+      "sha256": "1775c225c6bdaf0998d28ef596f896dbcdbda93fb315458ba7f867764e4b85b3"
+    },
+    "pip_freeze": {
+      "path": "artifacts/evidence/pip_freeze.txt",
+      "sha256": "a0bf9cff7b4c18c4e7a185995f095846a5d8ea05c5e4aabb9b34baefcbef30d3"
+    },
+    "recipe_main_tf": {
+      "path": "artifacts/recipe/main.tf",
+      "sha256": "f9aca9f33b229b79adccf8e9dc5e8b32cf505f4711350bc30267418cc339a4ba"
+    },
+    "recipe_provider_lock": {
+      "path": "artifacts/recipe/.terraform.lock.hcl",
+      "sha256": "908995751e419ccc091be70dda4da29a2c898360f4b3d7dbe9d397ff17f6de85"
+    },
+    "recipe_requirements": {
+      "path": "artifacts/recipe/requirements.txt",
+      "sha256": "5eaa2d1dbf5fa411ec8babd657aed5766b7d33ff61eafc7c72cdcfdf1e73f253"
+    },
+    "recipe_run_sh": {
+      "path": "artifacts/recipe/run.sh",
+      "sha256": "2bc2ebe81afdc928640ad2c32d28341e756aaa85f47f1200efecd8ef2ce1128f"
+    },
+    "recipe_tfvars": {
+      "path": "artifacts/recipe/declared.auto.tfvars",
+      "sha256": "b136fe90ada0d49e4da2318e8d944199fb2a25d3c63a77366191e80f3d288833"
+    },
+    "results": {
+      "path": "artifacts/results.json",
+      "sha256": "d5fd23a816fb0cb90beacc56725457fd76350f4903eaa1b79f0ec16a0446b226"
+    },
+    "scorer_code": {
+      "path": "artifacts/code/_choice.py",
+      "sha256": "c774ff7187a5667660702e985a9d62d052d47bb96ee309fe57c77638655fd528"
+    },
+    "solver_code": {
+      "path": "artifacts/code/_multiple_choice.py",
+      "sha256": "89d0cc24e65ad11b36f90c58ea4e60b6aa97b3caee02d8b0b6372492163d3856"
+    },
+    "task_code": {
+      "path": "artifacts/code/truthfulqa.py",
+      "sha256": "7edf2fb9e20075173401c5e774ab8c6567fd024bbded627cba6bee69dd1301b5"
+    },
+    "tofu_refresh_plan": {
+      "path": "artifacts/evidence/tofu_refresh_plan.txt",
+      "sha256": "144f75cb084433edd16f32333f514e40c49a66a480ddec0b58a80a0586bebea8"
+    },
+    "tofu_state": {
+      "path": "artifacts/evidence/tofu_state.json",
+      "sha256": "6cf609ff7545254a6a4f261f7ac77543088fd884612fdd1c944f05dd9ce9b711"
+    }
+  },
+  "grading_prompt": null,
+  "infra_actual": {
+    "eval_image": "python@sha256:e48f59cdba69a3cbd9ed2cf0f348d90d45a8d350d98134cf1070bc106ee9ed90",
+    "inspect_ai_version": "0.3.290",
+    "inspect_evals_version": "0.29.0",
+    "limit": "100",
+    "max_tokens": "256",
+    "model_digest": "sha256:a8b0c51577010a279d933d14c2a8ab4b268079d44c5c8830c0a93900f1827c67",
+    "model_quantization": "Q4_K_M",
+    "model_tag": "qwen2.5:0.5b",
+    "ollama_image": "ollama/ollama@sha256:0e59999e0e8f9fd4e704bd788a89b7e4cad399367fb1365f8c102ac662288761",
+    "seed": "42",
+    "task": "inspect_evals/truthfulqa",
+    "task_args": {
+      "shuffle": "false",
+      "shuffle_choices": "42",
+      "target": "mc1"
+    },
+    "temperature": "0"
+  },
+  "infra_declared": {
+    "eval_image": "python@sha256:e48f59cdba69a3cbd9ed2cf0f348d90d45a8d350d98134cf1070bc106ee9ed90",
+    "inspect_ai_version": "0.3.290",
+    "inspect_evals_version": "0.29.0",
+    "limit": "100",
+    "max_tokens": "256",
+    "model_digest": "sha256:a8b0c51577010a279d933d14c2a8ab4b268079d44c5c8830c0a93900f1827c67",
+    "model_quantization": "Q4_K_M",
+    "model_tag": "qwen2.5:0.5b",
+    "ollama_image": "ollama/ollama@sha256:910d0d8107b538fb0894e63163eb195de0cc7aefcbc666dc62d3b18f71124592",
+    "seed": "42",
+    "task": "inspect_evals/truthfulqa",
+    "task_args": {
+      "shuffle": "false",
+      "shuffle_choices": "42",
+      "target": "mc1"
+    },
+    "temperature": "0"
+  },
+  "judge_model": "none",
+  "model": "ollama/qwen2.5:0.5b",
+  "run_id": "D1",
+  "schema_version": "0.1",
+  "scorer_commit": "inspect_evals==0.29.0",
+  "signature": "G7JWyGidjfEkAzqsM+IjfPr5J+vPj0bZQnzk1s08eAAPxug1RQasBTtimlIKXrRrqeP2hUWTnpNeGO71FS/FCg==",
+  "timestamp": "2026-11-16T01:02:04Z"
+}

@@ -43,7 +43,7 @@ The examples below assume `trustinfra` is on your PATH. If it isn't, use `./trus
 
 1. **(One time) Generate a keypair.**
    `trustinfra keygen mykey` writes `mykey.key` (secret) and `mykey.pub` (public). Keep `*.key` private and never commit it. Share only the `.pub`.
-2. **Run your evaluation.** *(TODO: details on capturing infrastructure with OpenTofu.)*
+2. **Run your evaluation.** For a worked example that declares the setup with OpenTofu and captures what actually ran, see [Experiments](#experiments).
 3. **Assemble the bundle.** Put the run's files in `bundle/artifacts/` and write `bundle/manifest.json` ([schema below](#manifest-schema-v01)). For now each artifact entry needs a `sha256` value of any 64 hex characters; `sign` replaces it with the real hash.
 4. **Sign.** `trustinfra sign ./bundle --key mykey.key`. Don't change the bundle after this.
 5. **Verify.** `trustinfra verify ./bundle --trusted-key mykey.pub` (add `--json` for a machine-readable report).
@@ -148,3 +148,44 @@ bundle/
     ├── scorer.py
     └── dataset.json
 ```
+
+## Experiments
+
+An end-to-end run on a real evaluation: TruthfulQA MC1 with Inspect, against `qwen2.5:0.5b` served by Ollama. Both run in Docker containers declared with OpenTofu.
+
+```
+infra/                  OpenTofu recipe; declared.auto.tfvars is the declared setup
+experiments/
+  eval/                 runs inside the eval container (run.sh, requirements.txt)
+  scripts/              capture_actual.py (what actually ran), bundle.py (packs the bundle)
+  keys/demo.pub         public key for the experiment bundles
+  run_eval.sh           one run: tofu apply → eval → capture → bundle → sign → verify
+  reproduce.sh          all runs from scratch (level B)
+  verify_results.sh     check our published bundles (level A)
+  results/              our sealed bundles and tables (committed)
+  runs/<run_id>/        your local outputs (not committed)
+```
+
+### Reproduce
+
+**A. Check our results** (Rust ≥ 1.85 only, ~2 min). Verifies every published bundle with `experiments/keys/demo.pub` and compares the verdict with the one we recorded:
+
+```sh
+experiments/verify_results.sh
+```
+
+**B. Re-run everything** (Docker with ≥ 8 GB memory, [OpenTofu](https://opentofu.org), Rust ≥ 1.85, Python ≥ 3.11; ~1–1.5 h on CPU). Generates your own key, so your bundles verify with your `demo.pub`, not ours:
+
+```sh
+experiments/reproduce.sh
+experiments/run_eval.sh smoke --limit 5    # or a 2-minute smoke test first
+```
+
+The host scripts use only the Python standard library. Poetry is needed only to change versions: edit `pyproject.toml`, run `poetry lock`, then `poetry export --without dev -o experiments/eval/requirements.txt` (needs `poetry-plugin-export`).
+
+**What can legitimately differ on your machine**
+- Scores can differ slightly on another CPU. Detection results (RQ2) do not depend on the score.
+- If Ollama's registry has changed `qwen2.5:0.5b` since our runs, your clean runs report `TAMPERED` with `model_digest` in the infra diff. That is the check working: what ran differs from the recipe.
+- Tested on Apple M1 Pro (arm64, Docker Desktop). Image digests are multi-arch, but x86-64/Linux is untested.
+
+`infra_actual` is measured from the running system (`docker inspect`, Ollama's model list, installed package versions), not copied from the recipe. `experiments/runs/<run_id>/raw/capture.json` records the source of each value.

@@ -1,0 +1,30 @@
+case,group,B-raw,B-fp static,B-fp regen,TrustInfra,trustinfra_verdict,trustinfra_failed_checks
+untouched copy,false alarm,0,0,0,0,verified,
+manifest re-formatted,false alarm,0,1,0,0,verified,
+artifact whitespace,byte change,0,1,0,1,tampered,artifact:results
+edit results,artifact edit,0,1,0,1,tampered,artifact:results
+edit log headline only,artifact edit,1,1,0,1,tampered,artifact:inspect_log
+edit log consistently,artifact edit,0,1,0,1,tampered,artifact:inspect_log;artifact:results
+edit scorer code,artifact edit,0,1,0,1,tampered,artifact:scorer_code
+edit dataset,artifact edit,0,1,0,1,tampered,artifact:dataset
+delete artifact,artifact edit,0,1,0,1,tampered,artifact:results
+add unlisted file,artifact edit,0,1,0,1,tampered,unlisted_files
+edit manifest model,manifest edit,0,1,0,1,tampered,signature
+edit and rehash,manifest edit,0,1,0,1,tampered,signature
+attacker re-signs,manifest edit,0,1,0,1,tampered,signature
+remove signature,manifest edit,0,1,0,1,tampered,signature
+add unknown field,manifest edit,0,1,0,1,unverifiable,schema;signature
+unsafe artifact path,manifest edit,0,1,0,1,tampered,path_safety;signature
+"infra edit, real key",insider,0,1,0,1,tampered,infra_diff
+D1: as run,drift D1,0,0,0,1,tampered,infra_diff
+D1: hide drift,drift D1,0,1,0,1,tampered,signature
+"D1: hide drift, attacker re-signs",drift D1,0,1,0,1,tampered,signature
+D1: insider signs a lie,drift D1,0,1,0,0,verified,
+D2: as run,drift D2,0,0,0,1,tampered,infra_diff
+D2: hide drift,drift D2,0,1,0,1,tampered,signature
+"D2: hide drift, attacker re-signs",drift D2,0,1,0,1,tampered,signature
+D2: insider signs a lie,drift D2,0,1,0,0,verified,
+D7: as run,drift D7,1,0,0,1,tampered,infra_diff
+D7: hide drift,drift D7,1,1,0,1,tampered,signature
+"D7: hide drift, attacker re-signs",drift D7,1,1,0,1,tampered,signature
+D7: insider signs a lie,drift D7,1,1,0,0,verified,

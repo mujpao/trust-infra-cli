@@ -43,6 +43,21 @@ fn golden_bundle_verifies() {
 }
 
 #[test]
+fn unknown_schema_version_is_unverifiable() {
+    let root = tempdir().unwrap();
+    let key = SigningKey::generate(&mut rand::rng());
+    build_golden(root.path(), &key);
+
+    let mut manifest = read_manifest(root.path());
+    manifest["schema_version"] = json!("999.0");
+    resign(root.path(), &manifest, &key);
+
+    let report = verify(root.path(), &key.verifying_key());
+    assert_eq!(report.verdict, Verdict::Unverifiable);
+    assert!(report.failed_ids().contains(&"schema"));
+}
+
+#[test]
 fn all_mutations_detected() {
     let root = tempdir().unwrap();
     let golden = root.path().join("golden");

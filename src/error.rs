@@ -10,4 +10,6 @@ pub enum Error {
     UnsafePath(String),
     #[error("unlisted artifact files: {0:?}")]
     UnlistedFiles(Vec<String>),
+    #[error("unknown schema version: {0}")]
+    Schema(String),
 }

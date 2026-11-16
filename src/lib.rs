@@ -9,7 +9,7 @@ use crate::artifacts::{
     check_artifact, find_unlisted_artifact_files, hash_file, validate_artifact_path,
 };
 use crate::error::Error;
-use crate::manifest::Manifest;
+use crate::manifest::{Manifest, validate_schema_version};
 use crate::signature::{check_signature, sign_value};
 use base64::Engine;
 use ed25519_dalek::{SigningKey, VerifyingKey};
@@ -162,5 +162,7 @@ fn describe_unlisted_files(paths: &[String]) -> String {
 fn read_manifest_value(bundle: &Path) -> Result<Value, Error> {
     let manifest_path = bundle.join("manifest.json");
     let raw_json = read_to_string(&manifest_path)?;
-    Ok(serde_json::from_str(&raw_json)?)
+    let manifest: Value = serde_json::from_str(&raw_json)?;
+    validate_schema_version(&manifest)?;
+    Ok(manifest)
 }

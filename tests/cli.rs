@@ -113,10 +113,7 @@ fn signing_does_not_require_placeholder_artifact_hashes() {
     for entry in signed_manifest["artifacts"].as_object().unwrap().values() {
         let entry = entry.as_object().unwrap();
         let artifact_path = bundle.join(entry["path"].as_str().unwrap());
-        assert_eq!(
-            entry["sha256"].as_str().unwrap(),
-            hash_file(&artifact_path)
-        );
+        assert_eq!(entry["sha256"].as_str().unwrap(), hash_file(&artifact_path));
     }
 
     let verified = Command::new(BIN)
@@ -128,6 +125,42 @@ fn signing_does_not_require_placeholder_artifact_hashes() {
         .unwrap();
     assert_eq!(verified.status.code(), Some(0));
     assert!(String::from_utf8_lossy(&verified.stdout).starts_with("VERDICT: VERIFIED"));
+}
+
+#[test]
+fn signing_rejects_unsupported_schema_version() {
+    let temp = tempdir().unwrap();
+    let prefix = temp.path().join("signing");
+    let generated = keygen(&prefix);
+    assert!(
+        generated.status.success(),
+        "{}",
+        String::from_utf8_lossy(&generated.stderr)
+    );
+
+    let bundle = temp.path().join("bundle");
+    build_golden_unsigned(&bundle);
+    let mut manifest = read_manifest(&bundle);
+    manifest["schema_version"] = "999.0".into();
+    write_manifest(&bundle, &manifest);
+
+    let signed = Command::new(BIN)
+        .arg("sign")
+        .arg(&bundle)
+        .arg("--key")
+        .arg(suffixed(&prefix, ".key"))
+        .output()
+        .unwrap();
+    assert_ne!(
+        signed.status.code(),
+        Some(0),
+        "signing unexpectedly accepted an unsupported schema version"
+    );
+    assert!(
+        String::from_utf8_lossy(&signed.stderr).contains("unknown schema version: 999.0"),
+        "{}",
+        String::from_utf8_lossy(&signed.stderr)
+    );
 }
 
 #[test]

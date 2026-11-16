@@ -11,7 +11,7 @@
 
 ## Install
 
-**Option A: prebuilt binary** Download the build for your platform from the [Releases page](<RELEASES_URL>), then:
+**Option A: prebuilt binary** Download the build for your platform from the [Releases page](https://github.com/mujpao/trust-infra-cli/releases), rename to trustinfra if desired, then:
 
 ```sh
 chmod +x trustinfra          # Linux / macOS
@@ -21,7 +21,7 @@ chmod +x trustinfra          # Linux / macOS
 In a pipeline:
 
 ```sh
-curl -L -o trustinfra <RELEASE_ASSET_URL> && chmod +x trustinfra
+curl -L -o trustinfra https://github.com/mujpao/trust-infra-cli/releases/download/v0.1.0/trustinfra-x86_64-linux && chmod +x trustinfra
 ```
 
 **Option B: install with Cargo** (needs [Rust](https://rustup.rs)):
@@ -69,8 +69,8 @@ If the CLI prints `VERDICT: VERIFIED`, every file and manifest field is unchange
 | `timestamp` | string | yes | RFC 3339, UTC. |
 | `model` | string | yes | Model under evaluation. |
 | `scorer_commit` | string | yes | Git commit of the scorer code. |
-| `judge_model` | string | yes | Only if the scorer is LLM-graded. |
-| `grading_prompt` | string | yes | Only if the scorer is LLM-graded. |
+| `judge_model` | string | yes | The LLM judge. |
+| `grading_prompt` | string | yes | Prompt used to instruct the LLM judge. |
 | `artifacts` | object | yes | Map of name to `{path, sha256}`. Paths are relative to the bundle directory. |
 | `infra_declared` | object | yes | Declared environment (OpenTofu config, image digest, packages). |
 | `infra_actual` | object | yes | Applied state captured after the run. Compared against `infra_declared`. |
@@ -80,7 +80,7 @@ If the CLI prints `VERDICT: VERIFIED`, every file and manifest field is unchange
  
 - Files get a SHA-256 in `artifacts`. Plain values (model name, commit, etc.) live directly in the signed manifest.
 - Unknown top-level fields are rejected during manifest parsing (`deny_unknown_fields`), and the verification fails as `UNVERIFIABLE`.
-- No floats in the manifest. Scores stay in the hashed results file, which avoids JCS number-formatting ambiguity.
+- Floats are not allowed in the manifest. Scores stay in the hashed results file, which avoids JCS number-formatting ambiguity.
 - Artifact paths must be relative, with no `..`, and must not be symlinks.
 - Every file under `artifacts/` must be listed. Unlisted files fail the `unlisted_files` check.
 ## Example `manifest.json`

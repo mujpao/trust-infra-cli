@@ -1,0 +1,1063 @@
+[
+  {
+    "source": "R0-1",
+    "case": "untouched copy",
+    "group": "false alarm",
+    "description": "copy of the clean bundle, no change",
+    "expected": {
+      "B-raw": false,
+      "B-fp static": false,
+      "B-fp regen": false,
+      "TrustInfra": false
+    },
+    "observed": {
+      "B-raw": false,
+      "B-fp static": false,
+      "B-fp regen": false,
+      "TrustInfra": false
+    },
+    "issues": {
+      "B-raw": [],
+      "B-fp static": [],
+      "B-fp regen": [],
+      "TrustInfra": []
+    },
+    "trustinfra": {
+      "verdict": "verified",
+      "exit_code": 0,
+      "failed_checks": [],
+      "infra_diff": []
+    }
+  },
+  {
+    "source": "R0-1",
+    "case": "manifest re-formatted",
+    "group": "false alarm",
+    "description": "manifest.json re-indented, keys reordered; same content",
+    "expected": {
+      "B-raw": false,
+      "B-fp static": true,
+      "B-fp regen": false,
+      "TrustInfra": false
+    },
+    "observed": {
+      "B-raw": false,
+      "B-fp static": true,
+      "B-fp regen": false,
+      "TrustInfra": false
+    },
+    "issues": {
+      "B-raw": [],
+      "B-fp static": [
+        "changed: manifest.json"
+      ],
+      "B-fp regen": [],
+      "TrustInfra": []
+    },
+    "trustinfra": {
+      "verdict": "verified",
+      "exit_code": 0,
+      "failed_checks": [],
+      "infra_diff": []
+    }
+  },
+  {
+    "source": "R0-1",
+    "case": "artifact whitespace",
+    "group": "byte change",
+    "description": "one newline appended to results.json",
+    "expected": {
+      "B-raw": false,
+      "B-fp static": true,
+      "B-fp regen": false,
+      "TrustInfra": true
+    },
+    "observed": {
+      "B-raw": false,
+      "B-fp static": true,
+      "B-fp regen": false,
+      "TrustInfra": true
+    },
+    "issues": {
+      "B-raw": [],
+      "B-fp static": [
+        "changed: artifacts/results.json"
+      ],
+      "B-fp regen": [],
+      "TrustInfra": [
+        "tampered: artifact:results"
+      ]
+    },
+    "trustinfra": {
+      "verdict": "tampered",
+      "exit_code": 1,
+      "failed_checks": [
+        "artifact:results"
+      ],
+      "infra_diff": []
+    }
+  },
+  {
+    "source": "R0-1",
+    "case": "edit results",
+    "group": "artifact edit",
+    "description": "results.json accuracy raised by 0.2",
+    "expected": {
+      "B-raw": false,
+      "B-fp static": true,
+      "B-fp regen": false,
+      "TrustInfra": true
+    },
+    "observed": {
+      "B-raw": false,
+      "B-fp static": true,
+      "B-fp regen": false,
+      "TrustInfra": true
+    },
+    "issues": {
+      "B-raw": [],
+      "B-fp static": [
+        "changed: artifacts/results.json"
+      ],
+      "B-fp regen": [],
+      "TrustInfra": [
+        "tampered: artifact:results"
+      ]
+    },
+    "trustinfra": {
+      "verdict": "tampered",
+      "exit_code": 1,
+      "failed_checks": [
+        "artifact:results"
+      ],
+      "infra_diff": []
+    }
+  },
+  {
+    "source": "R0-1",
+    "case": "edit log headline only",
+    "group": "artifact edit",
+    "description": "log headline accuracy raised by 0.2, samples untouched",
+    "expected": {
+      "B-raw": true,
+      "B-fp static": true,
+      "B-fp regen": false,
+      "TrustInfra": true
+    },
+    "observed": {
+      "B-raw": true,
+      "B-fp static": true,
+      "B-fp regen": false,
+      "TrustInfra": true
+    },
+    "issues": {
+      "B-raw": [
+        "headline accuracy 0.42000000000000004 != mean of samples 0.22"
+      ],
+      "B-fp static": [
+        "changed: artifacts/inspect_log.json"
+      ],
+      "B-fp regen": [],
+      "TrustInfra": [
+        "tampered: artifact:inspect_log"
+      ]
+    },
+    "trustinfra": {
+      "verdict": "tampered",
+      "exit_code": 1,
+      "failed_checks": [
+        "artifact:inspect_log"
+      ],
+      "infra_diff": []
+    }
+  },
+  {
+    "source": "R0-1",
+    "case": "edit log consistently",
+    "group": "artifact edit",
+    "description": "one sample flipped to correct, headline recomputed, results.json too",
+    "expected": {
+      "B-raw": false,
+      "B-fp static": true,
+      "B-fp regen": false,
+      "TrustInfra": true
+    },
+    "observed": {
+      "B-raw": false,
+      "B-fp static": true,
+      "B-fp regen": false,
+      "TrustInfra": true
+    },
+    "issues": {
+      "B-raw": [],
+      "B-fp static": [
+        "changed: artifacts/inspect_log.json",
+        "changed: artifacts/results.json"
+      ],
+      "B-fp regen": [],
+      "TrustInfra": [
+        "tampered: artifact:inspect_log, artifact:results"
+      ]
+    },
+    "trustinfra": {
+      "verdict": "tampered",
+      "exit_code": 1,
+      "failed_checks": [
+        "artifact:inspect_log",
+        "artifact:results"
+      ],
+      "infra_diff": []
+    }
+  },
+  {
+    "source": "R0-1",
+    "case": "edit scorer code",
+    "group": "artifact edit",
+    "description": "line appended to the hashed scorer source",
+    "expected": {
+      "B-raw": false,
+      "B-fp static": true,
+      "B-fp regen": false,
+      "TrustInfra": true
+    },
+    "observed": {
+      "B-raw": false,
+      "B-fp static": true,
+      "B-fp regen": false,
+      "TrustInfra": true
+    },
+    "issues": {
+      "B-raw": [],
+      "B-fp static": [
+        "changed: artifacts/code/_choice.py"
+      ],
+      "B-fp regen": [],
+      "TrustInfra": [
+        "tampered: artifact:scorer_code"
+      ]
+    },
+    "trustinfra": {
+      "verdict": "tampered",
+      "exit_code": 1,
+      "failed_checks": [
+        "artifact:scorer_code"
+      ],
+      "infra_diff": []
+    }
+  },
+  {
+    "source": "R0-1",
+    "case": "edit dataset",
+    "group": "artifact edit",
+    "description": "one bit flipped in the dataset file",
+    "expected": {
+      "B-raw": false,
+      "B-fp static": true,
+      "B-fp regen": false,
+      "TrustInfra": true
+    },
+    "observed": {
+      "B-raw": false,
+      "B-fp static": true,
+      "B-fp regen": false,
+      "TrustInfra": true
+    },
+    "issues": {
+      "B-raw": [],
+      "B-fp static": [
+        "changed: artifacts/dataset/truthfulqa_mc_validation.parquet"
+      ],
+      "B-fp regen": [],
+      "TrustInfra": [
+        "tampered: artifact:dataset"
+      ]
+    },
+    "trustinfra": {
+      "verdict": "tampered",
+      "exit_code": 1,
+      "failed_checks": [
+        "artifact:dataset"
+      ],
+      "infra_diff": []
+    }
+  },
+  {
+    "source": "R0-1",
+    "case": "delete artifact",
+    "group": "artifact edit",
+    "description": "results.json deleted",
+    "expected": {
+      "B-raw": false,
+      "B-fp static": true,
+      "B-fp regen": false,
+      "TrustInfra": true
+    },
+    "observed": {
+      "B-raw": false,
+      "B-fp static": true,
+      "B-fp regen": false,
+      "TrustInfra": true
+    },
+    "issues": {
+      "B-raw": [],
+      "B-fp static": [
+        "missing: artifacts/results.json"
+      ],
+      "B-fp regen": [],
+      "TrustInfra": [
+        "tampered: artifact:results"
+      ]
+    },
+    "trustinfra": {
+      "verdict": "tampered",
+      "exit_code": 1,
+      "failed_checks": [
+        "artifact:results"
+      ],
+      "infra_diff": []
+    }
+  },
+  {
+    "source": "R0-1",
+    "case": "add unlisted file",
+    "group": "artifact edit",
+    "description": "extra file added under artifacts/",
+    "expected": {
+      "B-raw": false,
+      "B-fp static": true,
+      "B-fp regen": false,
+      "TrustInfra": true
+    },
+    "observed": {
+      "B-raw": false,
+      "B-fp static": true,
+      "B-fp regen": false,
+      "TrustInfra": true
+    },
+    "issues": {
+      "B-raw": [],
+      "B-fp static": [
+        "extra: artifacts/extra.json"
+      ],
+      "B-fp regen": [],
+      "TrustInfra": [
+        "tampered: unlisted_files"
+      ]
+    },
+    "trustinfra": {
+      "verdict": "tampered",
+      "exit_code": 1,
+      "failed_checks": [
+        "unlisted_files"
+      ],
+      "infra_diff": []
+    }
+  },
+  {
+    "source": "R0-1",
+    "case": "edit manifest model",
+    "group": "manifest edit",
+    "description": "manifest model changed, not re-signed",
+    "expected": {
+      "B-raw": false,
+      "B-fp static": true,
+      "B-fp regen": false,
+      "TrustInfra": true
+    },
+    "observed": {
+      "B-raw": false,
+      "B-fp static": true,
+      "B-fp regen": false,
+      "TrustInfra": true
+    },
+    "issues": {
+      "B-raw": [],
+      "B-fp static": [
+        "changed: manifest.json"
+      ],
+      "B-fp regen": [],
+      "TrustInfra": [
+        "tampered: signature"
+      ]
+    },
+    "trustinfra": {
+      "verdict": "tampered",
+      "exit_code": 1,
+      "failed_checks": [
+        "signature"
+      ],
+      "infra_diff": []
+    }
+  },
+  {
+    "source": "R0-1",
+    "case": "edit and rehash",
+    "group": "manifest edit",
+    "description": "results edited and its manifest hash updated, not re-signed",
+    "expected": {
+      "B-raw": false,
+      "B-fp static": true,
+      "B-fp regen": false,
+      "TrustInfra": true
+    },
+    "observed": {
+      "B-raw": false,
+      "B-fp static": true,
+      "B-fp regen": false,
+      "TrustInfra": true
+    },
+    "issues": {
+      "B-raw": [],
+      "B-fp static": [
+        "changed: artifacts/results.json",
+        "changed: manifest.json"
+      ],
+      "B-fp regen": [],
+      "TrustInfra": [
+        "tampered: signature"
+      ]
+    },
+    "trustinfra": {
+      "verdict": "tampered",
+      "exit_code": 1,
+      "failed_checks": [
+        "signature"
+      ],
+      "infra_diff": []
+    }
+  },
+  {
+    "source": "R0-1",
+    "case": "attacker re-signs",
+    "group": "manifest edit",
+    "description": "results edited, bundle re-signed with an attacker's key",
+    "expected": {
+      "B-raw": false,
+      "B-fp static": true,
+      "B-fp regen": false,
+      "TrustInfra": true
+    },
+    "observed": {
+      "B-raw": false,
+      "B-fp static": true,
+      "B-fp regen": false,
+      "TrustInfra": true
+    },
+    "issues": {
+      "B-raw": [],
+      "B-fp static": [
+        "changed: artifacts/results.json",
+        "changed: manifest.json"
+      ],
+      "B-fp regen": [],
+      "TrustInfra": [
+        "tampered: signature"
+      ]
+    },
+    "trustinfra": {
+      "verdict": "tampered",
+      "exit_code": 1,
+      "failed_checks": [
+        "signature"
+      ],
+      "infra_diff": []
+    }
+  },
+  {
+    "source": "R0-1",
+    "case": "remove signature",
+    "group": "manifest edit",
+    "description": "signature field deleted",
+    "expected": {
+      "B-raw": false,
+      "B-fp static": true,
+      "B-fp regen": false,
+      "TrustInfra": true
+    },
+    "observed": {
+      "B-raw": false,
+      "B-fp static": true,
+      "B-fp regen": false,
+      "TrustInfra": true
+    },
+    "issues": {
+      "B-raw": [],
+      "B-fp static": [
+        "changed: manifest.json"
+      ],
+      "B-fp regen": [],
+      "TrustInfra": [
+        "tampered: signature"
+      ]
+    },
+    "trustinfra": {
+      "verdict": "tampered",
+      "exit_code": 1,
+      "failed_checks": [
+        "signature"
+      ],
+      "infra_diff": []
+    }
+  },
+  {
+    "source": "R0-1",
+    "case": "add unknown field",
+    "group": "manifest edit",
+    "description": "unknown top-level field added (verdict UNVERIFIABLE)",
+    "expected": {
+      "B-raw": false,
+      "B-fp static": true,
+      "B-fp regen": false,
+      "TrustInfra": true
+    },
+    "observed": {
+      "B-raw": false,
+      "B-fp static": true,
+      "B-fp regen": false,
+      "TrustInfra": true
+    },
+    "issues": {
+      "B-raw": [],
+      "B-fp static": [
+        "changed: manifest.json"
+      ],
+      "B-fp regen": [],
+      "TrustInfra": [
+        "unverifiable: schema, signature"
+      ]
+    },
+    "trustinfra": {
+      "verdict": "unverifiable",
+      "exit_code": 2,
+      "failed_checks": [
+        "schema",
+        "signature"
+      ],
+      "infra_diff": []
+    }
+  },
+  {
+    "source": "R0-1",
+    "case": "unsafe artifact path",
+    "group": "manifest edit",
+    "description": "artifact entry pointing outside the bundle added, not re-signed",
+    "expected": {
+      "B-raw": false,
+      "B-fp static": true,
+      "B-fp regen": false,
+      "TrustInfra": true
+    },
+    "observed": {
+      "B-raw": false,
+      "B-fp static": true,
+      "B-fp regen": false,
+      "TrustInfra": true
+    },
+    "issues": {
+      "B-raw": [],
+      "B-fp static": [
+        "changed: manifest.json"
+      ],
+      "B-fp regen": [],
+      "TrustInfra": [
+        "tampered: path_safety, signature"
+      ]
+    },
+    "trustinfra": {
+      "verdict": "tampered",
+      "exit_code": 1,
+      "failed_checks": [
+        "path_safety",
+        "signature"
+      ],
+      "infra_diff": []
+    }
+  },
+  {
+    "source": "R0-1",
+    "case": "infra edit, real key",
+    "group": "insider",
+    "description": "infra_actual changed and re-signed with the real key (diff check)",
+    "expected": {
+      "B-raw": false,
+      "B-fp static": true,
+      "B-fp regen": false,
+      "TrustInfra": true
+    },
+    "observed": {
+      "B-raw": false,
+      "B-fp static": true,
+      "B-fp regen": false,
+      "TrustInfra": true
+    },
+    "issues": {
+      "B-raw": [],
+      "B-fp static": [
+        "changed: manifest.json"
+      ],
+      "B-fp regen": [],
+      "TrustInfra": [
+        "tampered: infra_diff"
+      ]
+    },
+    "trustinfra": {
+      "verdict": "tampered",
+      "exit_code": 1,
+      "failed_checks": [
+        "infra_diff"
+      ],
+      "infra_diff": [
+        {
+          "path": "model_quantization",
+          "declared": "Q4_K_M",
+          "actual": "Q8_0"
+        }
+      ]
+    }
+  },
+  {
+    "source": "D1",
+    "case": "D1: as run",
+    "group": "drift D1",
+    "description": "the bundle exactly as the drifted run produced it",
+    "expected": {
+      "B-raw": null,
+      "B-fp static": false,
+      "B-fp regen": false,
+      "TrustInfra": true
+    },
+    "observed": {
+      "B-raw": false,
+      "B-fp static": false,
+      "B-fp regen": false,
+      "TrustInfra": true
+    },
+    "issues": {
+      "B-raw": [],
+      "B-fp static": [],
+      "B-fp regen": [],
+      "TrustInfra": [
+        "tampered: infra_diff"
+      ]
+    },
+    "trustinfra": {
+      "verdict": "tampered",
+      "exit_code": 1,
+      "failed_checks": [
+        "infra_diff"
+      ],
+      "infra_diff": [
+        {
+          "path": "ollama_image",
+          "declared": "ollama/ollama@sha256:910d0d8107b538fb0894e63163eb195de0cc7aefcbc666dc62d3b18f71124592",
+          "actual": "ollama/ollama@sha256:0e59999e0e8f9fd4e704bd788a89b7e4cad399367fb1365f8c102ac662288761"
+        }
+      ]
+    }
+  },
+  {
+    "source": "D1",
+    "case": "D1: hide drift",
+    "group": "drift D1",
+    "description": "infra_actual overwritten with declared values, not re-signed",
+    "expected": {
+      "B-raw": null,
+      "B-fp static": true,
+      "B-fp regen": false,
+      "TrustInfra": true
+    },
+    "observed": {
+      "B-raw": false,
+      "B-fp static": true,
+      "B-fp regen": false,
+      "TrustInfra": true
+    },
+    "issues": {
+      "B-raw": [],
+      "B-fp static": [
+        "changed: manifest.json"
+      ],
+      "B-fp regen": [],
+      "TrustInfra": [
+        "tampered: signature"
+      ]
+    },
+    "trustinfra": {
+      "verdict": "tampered",
+      "exit_code": 1,
+      "failed_checks": [
+        "signature"
+      ],
+      "infra_diff": []
+    }
+  },
+  {
+    "source": "D1",
+    "case": "D1: hide drift, attacker re-signs",
+    "group": "drift D1",
+    "description": "same, re-signed with an attacker's key",
+    "expected": {
+      "B-raw": null,
+      "B-fp static": true,
+      "B-fp regen": false,
+      "TrustInfra": true
+    },
+    "observed": {
+      "B-raw": false,
+      "B-fp static": true,
+      "B-fp regen": false,
+      "TrustInfra": true
+    },
+    "issues": {
+      "B-raw": [],
+      "B-fp static": [
+        "changed: manifest.json"
+      ],
+      "B-fp regen": [],
+      "TrustInfra": [
+        "tampered: signature"
+      ]
+    },
+    "trustinfra": {
+      "verdict": "tampered",
+      "exit_code": 1,
+      "failed_checks": [
+        "signature"
+      ],
+      "infra_diff": []
+    }
+  },
+  {
+    "source": "D1",
+    "case": "D1: insider signs a lie",
+    "group": "drift D1",
+    "description": "same, re-signed with the real key (outside the threat model)",
+    "expected": {
+      "B-raw": null,
+      "B-fp static": true,
+      "B-fp regen": false,
+      "TrustInfra": false
+    },
+    "observed": {
+      "B-raw": false,
+      "B-fp static": true,
+      "B-fp regen": false,
+      "TrustInfra": false
+    },
+    "issues": {
+      "B-raw": [],
+      "B-fp static": [
+        "changed: manifest.json"
+      ],
+      "B-fp regen": [],
+      "TrustInfra": []
+    },
+    "trustinfra": {
+      "verdict": "verified",
+      "exit_code": 0,
+      "failed_checks": [],
+      "infra_diff": []
+    }
+  },
+  {
+    "source": "D2",
+    "case": "D2: as run",
+    "group": "drift D2",
+    "description": "the bundle exactly as the drifted run produced it",
+    "expected": {
+      "B-raw": null,
+      "B-fp static": false,
+      "B-fp regen": false,
+      "TrustInfra": true
+    },
+    "observed": {
+      "B-raw": false,
+      "B-fp static": false,
+      "B-fp regen": false,
+      "TrustInfra": true
+    },
+    "issues": {
+      "B-raw": [],
+      "B-fp static": [],
+      "B-fp regen": [],
+      "TrustInfra": [
+        "tampered: infra_diff"
+      ]
+    },
+    "trustinfra": {
+      "verdict": "tampered",
+      "exit_code": 1,
+      "failed_checks": [
+        "infra_diff"
+      ],
+      "infra_diff": [
+        {
+          "path": "model_digest",
+          "declared": "sha256:a8b0c51577010a279d933d14c2a8ab4b268079d44c5c8830c0a93900f1827c67",
+          "actual": "sha256:84d044692a2ce0a5a063d3177ca7a69fb189fd81b3139a7a3ead74ccf42a51dc"
+        },
+        {
+          "path": "model_quantization",
+          "declared": "Q4_K_M",
+          "actual": "Q8_0"
+        }
+      ]
+    }
+  },
+  {
+    "source": "D2",
+    "case": "D2: hide drift",
+    "group": "drift D2",
+    "description": "infra_actual overwritten with declared values, not re-signed",
+    "expected": {
+      "B-raw": null,
+      "B-fp static": true,
+      "B-fp regen": false,
+      "TrustInfra": true
+    },
+    "observed": {
+      "B-raw": false,
+      "B-fp static": true,
+      "B-fp regen": false,
+      "TrustInfra": true
+    },
+    "issues": {
+      "B-raw": [],
+      "B-fp static": [
+        "changed: manifest.json"
+      ],
+      "B-fp regen": [],
+      "TrustInfra": [
+        "tampered: signature"
+      ]
+    },
+    "trustinfra": {
+      "verdict": "tampered",
+      "exit_code": 1,
+      "failed_checks": [
+        "signature"
+      ],
+      "infra_diff": []
+    }
+  },
+  {
+    "source": "D2",
+    "case": "D2: hide drift, attacker re-signs",
+    "group": "drift D2",
+    "description": "same, re-signed with an attacker's key",
+    "expected": {
+      "B-raw": null,
+      "B-fp static": true,
+      "B-fp regen": false,
+      "TrustInfra": true
+    },
+    "observed": {
+      "B-raw": false,
+      "B-fp static": true,
+      "B-fp regen": false,
+      "TrustInfra": true
+    },
+    "issues": {
+      "B-raw": [],
+      "B-fp static": [
+        "changed: manifest.json"
+      ],
+      "B-fp regen": [],
+      "TrustInfra": [
+        "tampered: signature"
+      ]
+    },
+    "trustinfra": {
+      "verdict": "tampered",
+      "exit_code": 1,
+      "failed_checks": [
+        "signature"
+      ],
+      "infra_diff": []
+    }
+  },
+  {
+    "source": "D2",
+    "case": "D2: insider signs a lie",
+    "group": "drift D2",
+    "description": "same, re-signed with the real key (outside the threat model)",
+    "expected": {
+      "B-raw": null,
+      "B-fp static": true,
+      "B-fp regen": false,
+      "TrustInfra": false
+    },
+    "observed": {
+      "B-raw": false,
+      "B-fp static": true,
+      "B-fp regen": false,
+      "TrustInfra": false
+    },
+    "issues": {
+      "B-raw": [],
+      "B-fp static": [
+        "changed: manifest.json"
+      ],
+      "B-fp regen": [],
+      "TrustInfra": []
+    },
+    "trustinfra": {
+      "verdict": "verified",
+      "exit_code": 0,
+      "failed_checks": [],
+      "infra_diff": []
+    }
+  },
+  {
+    "source": "D7",
+    "case": "D7: as run",
+    "group": "drift D7",
+    "description": "the bundle exactly as the drifted run produced it",
+    "expected": {
+      "B-raw": null,
+      "B-fp static": false,
+      "B-fp regen": false,
+      "TrustInfra": true
+    },
+    "observed": {
+      "B-raw": true,
+      "B-fp static": false,
+      "B-fp regen": false,
+      "TrustInfra": true
+    },
+    "issues": {
+      "B-raw": [
+        "inspect_ai version: log says '0.3.289', claim says '0.3.290'"
+      ],
+      "B-fp static": [],
+      "B-fp regen": [],
+      "TrustInfra": [
+        "tampered: infra_diff"
+      ]
+    },
+    "trustinfra": {
+      "verdict": "tampered",
+      "exit_code": 1,
+      "failed_checks": [
+        "infra_diff"
+      ],
+      "infra_diff": [
+        {
+          "path": "inspect_ai_version",
+          "declared": "0.3.290",
+          "actual": "0.3.289"
+        }
+      ]
+    }
+  },
+  {
+    "source": "D7",
+    "case": "D7: hide drift",
+    "group": "drift D7",
+    "description": "infra_actual overwritten with declared values, not re-signed",
+    "expected": {
+      "B-raw": null,
+      "B-fp static": true,
+      "B-fp regen": false,
+      "TrustInfra": true
+    },
+    "observed": {
+      "B-raw": true,
+      "B-fp static": true,
+      "B-fp regen": false,
+      "TrustInfra": true
+    },
+    "issues": {
+      "B-raw": [
+        "inspect_ai version: log says '0.3.289', claim says '0.3.290'"
+      ],
+      "B-fp static": [
+        "changed: manifest.json"
+      ],
+      "B-fp regen": [],
+      "TrustInfra": [
+        "tampered: signature"
+      ]
+    },
+    "trustinfra": {
+      "verdict": "tampered",
+      "exit_code": 1,
+      "failed_checks": [
+        "signature"
+      ],
+      "infra_diff": []
+    }
+  },
+  {
+    "source": "D7",
+    "case": "D7: hide drift, attacker re-signs",
+    "group": "drift D7",
+    "description": "same, re-signed with an attacker's key",
+    "expected": {
+      "B-raw": null,
+      "B-fp static": true,
+      "B-fp regen": false,
+      "TrustInfra": true
+    },
+    "observed": {
+      "B-raw": true,
+      "B-fp static": true,
+      "B-fp regen": false,
+      "TrustInfra": true
+    },
+    "issues": {
+      "B-raw": [
+        "inspect_ai version: log says '0.3.289', claim says '0.3.290'"
+      ],
+      "B-fp static": [
+        "changed: manifest.json"
+      ],
+      "B-fp regen": [],
+      "TrustInfra": [
+        "tampered: signature"
+      ]
+    },
+    "trustinfra": {
+      "verdict": "tampered",
+      "exit_code": 1,
+      "failed_checks": [
+        "signature"
+      ],
+      "infra_diff": []
+    }
+  },
+  {
+    "source": "D7",
+    "case": "D7: insider signs a lie",
+    "group": "drift D7",
+    "description": "same, re-signed with the real key (outside the threat model)",
+    "expected": {
+      "B-raw": null,
+      "B-fp static": true,
+      "B-fp regen": false,
+      "TrustInfra": false
+    },
+    "observed": {
+      "B-raw": true,
+      "B-fp static": true,
+      "B-fp regen": false,
+      "TrustInfra": false
+    },
+    "issues": {
+      "B-raw": [
+        "inspect_ai version: log says '0.3.289', claim says '0.3.290'"
+      ],
+      "B-fp static": [
+        "changed: manifest.json"
+      ],
+      "B-fp regen": [],
+      "TrustInfra": []
+    },
+    "trustinfra": {
+      "verdict": "verified",
+      "exit_code": 0,
+      "failed_checks": [],
+      "infra_diff": []
+    }
+  }
+]

@@ -44,7 +44,7 @@ The examples below assume `trustinfra` is on your PATH. If it isn't, use `./trus
 1. **(One time) Generate a keypair.**
    `trustinfra keygen mykey` writes `mykey.key` (secret) and `mykey.pub` (public). Keep `*.key` private and never commit it. Share only the `.pub`.
 2. **Run your evaluation.** For a worked example that declares the setup with OpenTofu and captures what actually ran, see [Experiments](#experiments).
-3. **Assemble the bundle.** Put the run's files in `bundle/artifacts/` and write `bundle/manifest.json` ([schema below](#manifest-schema-v01)). For now each artifact entry needs a `sha256` value of any 64 hex characters; `sign` replaces it with the real hash.
+3. **Assemble the bundle.** Put the run's files in `bundle/artifacts/` and write `bundle/manifest.json` ([schema below](#manifest-schema-v01)).
 4. **Sign.** `trustinfra sign ./bundle --key mykey.key`. Don't change the bundle after this.
 5. **Verify.** `trustinfra verify ./bundle --trusted-key mykey.pub` (add `--json` for a machine-readable report).
 

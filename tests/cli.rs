@@ -10,7 +10,7 @@ use std::{
 use serde_json::Value;
 use tempfile::tempdir;
 
-use common::build_golden_unsigned;
+use common::{build_golden_unsigned, hash_file, read_manifest, write_manifest};
 
 const BIN: &str = env!("CARGO_BIN_EXE_trustinfra");
 
@@ -67,6 +67,65 @@ fn keygen_sign_and_verify_golden_bundle() {
     let bundle = temp.path().join("bundle");
     let (verified, _) = sign_and_verify(&prefix, &bundle);
 
+    assert_eq!(verified.status.code(), Some(0));
+    assert!(String::from_utf8_lossy(&verified.stdout).starts_with("VERDICT: VERIFIED"));
+}
+
+#[test]
+fn signing_does_not_require_placeholder_artifact_hashes() {
+    let temp = tempdir().unwrap();
+    let prefix = temp.path().join("signing");
+    let generated = keygen(&prefix);
+    assert!(
+        generated.status.success(),
+        "{}",
+        String::from_utf8_lossy(&generated.stderr)
+    );
+
+    let bundle = temp.path().join("bundle");
+    build_golden_unsigned(&bundle);
+    let mut manifest = read_manifest(&bundle);
+    let artifacts = manifest["artifacts"].as_object_mut().unwrap();
+    for entry in artifacts.values_mut() {
+        entry.as_object_mut().unwrap().remove("sha256");
+    }
+    assert!(
+        artifacts
+            .values()
+            .all(|entry| !entry.as_object().unwrap().contains_key("sha256"))
+    );
+    write_manifest(&bundle, &manifest);
+
+    let signed = Command::new(BIN)
+        .arg("sign")
+        .arg(&bundle)
+        .arg("--key")
+        .arg(suffixed(&prefix, ".key"))
+        .output()
+        .unwrap();
+    assert!(
+        signed.status.success(),
+        "{}",
+        String::from_utf8_lossy(&signed.stderr)
+    );
+
+    let signed_manifest = read_manifest(&bundle);
+    for entry in signed_manifest["artifacts"].as_object().unwrap().values() {
+        let entry = entry.as_object().unwrap();
+        let artifact_path = bundle.join(entry["path"].as_str().unwrap());
+        assert_eq!(
+            entry["sha256"].as_str().unwrap(),
+            hash_file(&artifact_path)
+        );
+    }
+
+    let verified = Command::new(BIN)
+        .arg("verify")
+        .arg(&bundle)
+        .arg("--trusted-key")
+        .arg(suffixed(&prefix, ".pub"))
+        .output()
+        .unwrap();
     assert_eq!(verified.status.code(), Some(0));
     assert!(String::from_utf8_lossy(&verified.stdout).starts_with("VERDICT: VERIFIED"));
 }

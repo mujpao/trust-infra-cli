@@ -1,0 +1,22 @@
+[tool.poetry]
+name = "trustinfra-experiments"
+version = "0.1.0"
+description = "RQ1/RQ2 experiments for TrustInfra: OpenTofu-declared Inspect runs, bundling, baselines, mutation matrix"
+authors = ["TrustInfra team"]
+readme = "README.md"
+package-mode = false
+
+[tool.poetry.dependencies]
+python = ">=3.11,<3.14"
+# Eval stack. Exact versions are pinned by poetry.lock; the eval image installs
+# from `poetry export`, so the lock file IS the declared software stack.
+inspect-ai = "*"
+inspect-evals = "*"
+openai = "*"   # Inspect's ollama provider uses the OpenAI-compatible client
+
+[tool.poetry.group.dev.dependencies]
+pytest = "*"
+
+[build-system]
+requires = ["poetry-core>=1.8"]
+build-backend = "poetry.core.masonry.api"

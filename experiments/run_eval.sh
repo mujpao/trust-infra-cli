@@ -34,6 +34,13 @@ MODEL_TAG=$(get model_tag)
 TASK_ARGS=$(python3 -c "import json,sys; print(' '.join(f'-T {k}={v}' for k,v in json.loads(sys.argv[1])['task_args'].items()))" "$DECLARED")
 LIMIT=${LIMIT_OVERRIDE:-$(get limit)}
 
+# Wait for the Ollama server inside the container to accept requests.
+for i in $(seq 1 60); do
+  docker exec trustinfra-ollama ollama list >/dev/null 2>&1 && break
+  [[ $i -eq 60 ]] && { echo "ollama did not become ready in 60s"; docker logs trustinfra-ollama | tail -20; exit 1; }
+  sleep 1
+done
+
 # The model volume persists; pull re-syncs the tag with the registry.
 docker exec trustinfra-ollama ollama pull "$MODEL_TAG" >/dev/null
 docker exec trustinfra-eval bash /exp/run.sh install

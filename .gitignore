@@ -1,3 +1,8 @@
 /target
 .vscode
 *.key
+.venv
+infra/.terraform/
+infra/terraform.tfstate*
+experiments/runs/
+__pycache__/

@@ -1,0 +1,62 @@
+exit_code=2
+docker_image.ollama: Refreshing state... [id=sha256:910d0d8107b538fb0894e63163eb195de0cc7aefcbc666dc62d3b18f71124592ollama/ollama@sha256:910d0d8107b538fb0894e63163eb195de0cc7aefcbc666dc62d3b18f71124592]
+docker_volume.models: Refreshing state... [id=trustinfra-ollama-models]
+docker_network.net: Refreshing state... [id=4fc19c531e99f5ad8dce7b70b02ac24344736bd4eecd6741ea1a75796a897175]
+docker_volume.hf_cache: Refreshing state... [id=trustinfra-hf-cache]
+docker_volume.pip_cache: Refreshing state... [id=trustinfra-pip-cache]
+docker_image.eval: Refreshing state... [id=sha256:e48f59cdba69a3cbd9ed2cf0f348d90d45a8d350d98134cf1070bc106ee9ed90python@sha256:e48f59cdba69a3cbd9ed2cf0f348d90d45a8d350d98134cf1070bc106ee9ed90]
+docker_container.ollama: Refreshing state... [id=70912b09d61a3e2775c5a35ec806ae3c9facd5f7265bead53740730fde7e8737]
+docker_container.eval: Refreshing state... [id=f5753691955f6a8afe0fa88c130aa734f8ae4465373ac178c6abada121547ea5]
+
+Note: Objects have changed outside of OpenTofu
+
+OpenTofu detected the following changes made outside of OpenTofu since the
+last "tofu apply" which may have affected this plan:
+
+  # docker_container.eval has changed
+  ~ resource "docker_container" "eval" {
+      + dns                                         = []
+      + dns_opts                                    = []
+      + dns_search                                  = []
+      + group_add                                   = []
+        id                                          = "f5753691955f6a8afe0fa88c130aa734f8ae4465373ac178c6abada121547ea5"
+      + log_opts                                    = {}
+        name                                        = "trustinfra-eval"
+      + storage_opts                                = {}
+      + sysctls                                     = {}
+      + tmpfs                                       = {}
+        # (34 unchanged attributes hidden)
+
+        # (5 unchanged blocks hidden)
+    }
+
+  # docker_container.ollama has changed
+  ~ resource "docker_container" "ollama" {
+      + dns                                         = []
+      + dns_opts                                    = []
+      + dns_search                                  = []
+      + group_add                                   = []
+        id                                          = "70912b09d61a3e2775c5a35ec806ae3c9facd5f7265bead53740730fde7e8737"
+      + log_opts                                    = {}
+        name                                        = "trustinfra-ollama"
+      + storage_opts                                = {}
+      + sysctls                                     = {}
+      + tmpfs                                       = {}
+        # (34 unchanged attributes hidden)
+
+        # (2 unchanged blocks hidden)
+    }
+
+
+This is a refresh-only plan, so OpenTofu will not take any actions to undo
+these. If you were expecting these changes then you can apply this plan to
+record the updated values in the OpenTofu state without changing any remote
+objects.
+
+─────────────────────────────────────────────────────────────────────────────
+
+Saved the plan to:
+/Users/nurgultokzhanova/Documents/Hackathons/Epistemic/trust-infra-cli/experiments/runs/R0-3/raw/tofu_refresh.plan
+
+To perform exactly these actions, run the following command to apply:
+    tofu apply "/Users/nurgultokzhanova/Documents/Hackathons/Epistemic/trust-infra-cli/experiments/runs/R0-3/raw/tofu_refresh.plan"

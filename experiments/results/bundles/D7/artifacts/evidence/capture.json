@@ -1,0 +1,67 @@
+{
+  "sources": {
+    "ollama_image": "docker inspect (runtime)",
+    "eval_image": "docker inspect (runtime)",
+    "model_tag": "Inspect log (self-reported)",
+    "model_digest": "Ollama /api/tags (runtime)",
+    "model_quantization": "Ollama /api/tags (runtime)",
+    "inspect_ai_version": "importlib.metadata in eval container (runtime)",
+    "inspect_evals_version": "importlib.metadata in eval container (runtime)",
+    "task": "Inspect log (self-reported)",
+    "task_args": "Inspect log (self-reported)",
+    "limit": "Inspect log (self-reported)",
+    "temperature": "Inspect log (self-reported)",
+    "seed": "Inspect log (self-reported)",
+    "max_tokens": "Inspect log (self-reported)"
+  },
+  "images": [
+    {
+      "container": "trustinfra-ollama",
+      "image_id": "sha256:910d0d8107b538fb0894e63163eb195de0cc7aefcbc666dc62d3b18f71124592",
+      "repo_digests": [
+        "ollama/ollama@sha256:910d0d8107b538fb0894e63163eb195de0cc7aefcbc666dc62d3b18f71124592"
+      ]
+    },
+    {
+      "container": "trustinfra-eval",
+      "image_id": "sha256:e48f59cdba69a3cbd9ed2cf0f348d90d45a8d350d98134cf1070bc106ee9ed90",
+      "repo_digests": [
+        "python@sha256:e48f59cdba69a3cbd9ed2cf0f348d90d45a8d350d98134cf1070bc106ee9ed90"
+      ]
+    }
+  ],
+  "ollama_model": {
+    "name": "qwen2.5:0.5b",
+    "model": "qwen2.5:0.5b",
+    "modified_at": "2026-11-16T01:12:52.136747001Z",
+    "size": 397821319,
+    "digest": "a8b0c51577010a279d933d14c2a8ab4b268079d44c5c8830c0a93900f1827c67",
+    "details": {
+      "parent_model": "",
+      "format": "gguf",
+      "family": "qwen2",
+      "families": [
+        "qwen2"
+      ],
+      "parameter_size": "494.03M",
+      "quantization_level": "Q4_K_M",
+      "context_length": 32768,
+      "embedding_length": 896,
+      "runner": "ggml"
+    },
+    "capabilities": [
+      "completion",
+      "tools"
+    ]
+  },
+  "hardware": {
+    "host_cpu": "Apple M1 Pro",
+    "docker": {
+      "cpus": 10,
+      "mem_bytes": 8217968640,
+      "arch": "aarch64",
+      "server": "27.4.0"
+    },
+    "note": "self-reported by the evaluator's machine; CPU only, no GPU"
+  }
+}
